@@ -1,0 +1,50 @@
+{
+  "name": "logit",
+  "version": "0.1.0",
+  "description": "Simple logging module for NodeJs",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "rimraf ./dist/ && tsc -b ./tsconfig.compile.json",
+    "rmdist": "rimraf ./dist/",
+    "test": "jest --runInBand --forceExit",
+    "typecheck": "tsc -b",
+    "lint": "cross-env tslint -c tslint.json 'src/**/*.{ts,tsx}'",
+    "format": "cross-env prettier --write 'src/**/*.{ts,tsx}'",
+    "format:check": "cross-env prettier --check 'src/**/*.{ts,tsx}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashubisht/logit.git"
+  },
+  "keywords": [
+    "logit"
+  ],
+  "author": "ashubisht",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashubisht/logit/issues"
+  },
+  "homepage": "https://github.com/ashubisht/logit#readme",
+  "dependencies": {
+    "@google-cloud/logging-winston": "^3.0.6",
+    "aws-sdk": "^2.657.0",
+    "logform": "^2.1.2",
+    "winston": "^3.2.1",
+    "winston-cloudwatch": "^2.3.2"
+  },
+  "devDependencies": {
+    "@types/sinon": "^9.0.0",
+    "@types/supertest": "^2.0.8",
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
+    "jest": "^25.3.0",
+    "prettier": "^2.0.4",
+    "rimraf": "^3.0.2",
+    "sinon": "^9.0.2",
+    "supertest": "^4.0.2",
+    "ts-jest": "^25.4.0",
+    "tslint": "^6.1.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.8.3"
+  }
+}
