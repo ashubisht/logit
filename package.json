@@ -30,7 +30,8 @@
     "aws-sdk": "^2.657.0",
     "logform": "^2.1.2",
     "winston": "^3.2.1",
-    "winston-cloudwatch": "^2.3.2"
+    "winston-cloudwatch": "^2.3.2",
+    "winston-transport": "^4.3.0"
   },
   "devDependencies": {
     "@types/sinon": "^9.0.0",

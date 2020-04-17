@@ -1,7 +1,10 @@
-export interface IBindings {
-    config(obj: unknown): void;
+import * as TransportStream from "winston-transport";
+
+export interface IBinding {
+    config(obj: IBindingOption): void;
     mapTransports(obj: unknown): void;
     setVerbose(isVerbose: boolean): void;
+    getStream(): TransportStream | undefined;
 }
 
 export interface ICoudWatchBindingOptions {
@@ -12,3 +15,5 @@ export interface ICoudWatchBindingOptions {
     logStream: string;
     logGroup: string;
 }
+
+export type IBindingOption = ICoudWatchBindingOptions; // Extend more binding options here

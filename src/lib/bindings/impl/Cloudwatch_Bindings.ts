@@ -1,12 +1,16 @@
 import * as WinstonCloudWatch from "winston-cloudwatch";
-import { IBindings, ICoudWatchBindingOptions } from "../IBindings";
+import { IBinding, ICoudWatchBindingOptions } from "../IBindings";
 import { Verbose } from "../../utils/Verbose";
 import * as AWS from "aws-sdk";
 
-export class CloudWatchBindigs implements IBindings {
+export class CloudWatchBindigs implements IBinding {
 
-    private readonly verbose = Verbose.getInstance();
+    private readonly verbose: Verbose = Verbose.getInstance();
     public transportStream?: WinstonCloudWatch;
+
+    getStream() {
+        return this.transportStream;
+    }
 
     config(binding: ICoudWatchBindingOptions) {
         AWS.config.update({

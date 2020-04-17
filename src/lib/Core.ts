@@ -1,6 +1,7 @@
 import { Format, TransformableInfo } from "logform";
 import * as winston from "winston";
-import { EnvConfig } from "./utils/EnvConfig";
+import { IBinding } from "./bindings/IBindings";
+import * as TransportStream from "winston-transport";
 
 export class Logger {
     public static getInstance(): Logger {
@@ -12,27 +13,38 @@ export class Logger {
     }
     private static instance: Logger;
 
-    private readonly env = EnvConfig.getInstance();
-
-
-
     private readonly myFormat: Format = winston.format.printf(
         (infoMessage: TransformableInfo) => {
             return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} \n`;
         }
     );
 
+    private binding?: IBinding
+
     private readonly consoleTransportStream = new winston.transports.Console({
         format: winston.format.combine(winston.format.colorize(), this.myFormat)
     });
 
+    private fetchTransports() {
+        /* 
+        ** Typescript cant infer types being returned from function because
+        ** each call is runtime and dynamic. Therefore, first fetch bindings
+        ** and then check for its initialisation than checking the method itself.
+        */
+
+        let bindingStream: TransportStream | undefined;
+        if (this.binding !== undefined) {
+            bindingStream = this.binding.getStream();
+        }
+        return (process.env.NODE_ENV === "production" && bindingStream !== undefined)
+            ? [bindingStream]
+            : [this.consoleTransportStream];
+    }
+
     private readonly logger = winston.createLogger({
         level: "silly",
         format: winston.format.combine(winston.format.timestamp(), this.myFormat),
-        transports:
-            this.env.NODE_ENV === "production"
-                ? []
-                : [this.consoleTransportStream],
+        transports: this.fetchTransports(),
         exitOnError: false
     });
 
