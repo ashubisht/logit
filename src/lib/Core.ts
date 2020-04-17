@@ -1,7 +1,8 @@
 import { Format, TransformableInfo } from "logform";
 import * as winston from "winston";
-import { IBinding } from "./bindings/IBindings";
+import { IBinding, IBindingOption } from "./bindings/IBindings";
 import * as TransportStream from "winston-transport";
+import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
 
 export class Logger {
     public static getInstance(): Logger {
@@ -36,19 +37,31 @@ export class Logger {
         if (this.binding !== undefined) {
             bindingStream = this.binding.getStream();
         }
+
         return (process.env.NODE_ENV === "production" && bindingStream !== undefined)
-            ? [bindingStream]
-            : [this.consoleTransportStream];
+            ? bindingStream
+            : this.consoleTransportStream;
     }
 
     private readonly logger = winston.createLogger({
         level: "silly",
         format: winston.format.combine(winston.format.timestamp(), this.myFormat),
-        transports: this.fetchTransports(),
-        exitOnError: false
+        transports: [],
+        exitOnError: true
     });
 
     private constructor() { }
+
+    public configure(config?: IBindingOption) {
+        if (config !== undefined) {
+            // Instanceof is not working here.
+            // TODO: Check what type of config it is and then act accordingly to build bindings
+            this.binding = new CloudWatchBindigs();
+            this.binding.config(config);
+        }
+        this.logger.transports.splice(0, this.logger.transports.length);
+        this.logger.add(this.fetchTransports());
+    }
 
     // Wrapper methods to add function name and file name in log messages
     public info(source: string, method: string, ...message: string[]) {

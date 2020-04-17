@@ -1,7 +1,6 @@
 import * as WinstonCloudWatch from "winston-cloudwatch";
-import { IBinding, ICoudWatchBindingOptions } from "../IBindings";
+import { IBinding, ICloudWatchBindingOptions } from "../IBindings";
 import { Verbose } from "../../utils/Verbose";
-import * as AWS from "aws-sdk";
 
 export class CloudWatchBindigs implements IBinding {
 
@@ -12,10 +11,7 @@ export class CloudWatchBindigs implements IBinding {
         return this.transportStream;
     }
 
-    config(binding: ICoudWatchBindingOptions) {
-        AWS.config.update({
-            region: binding.region
-        });
+    config(binding: ICloudWatchBindingOptions) {
         const cloudWatchConfig: WinstonCloudWatch.CloudwatchTransportOptions = {
             awsAccessKeyId: binding.accessKeyId,
             awsSecretKey: binding.secretKey,

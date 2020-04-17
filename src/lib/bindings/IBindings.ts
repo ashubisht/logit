@@ -7,7 +7,7 @@ export interface IBinding {
     getStream(): TransportStream | undefined;
 }
 
-export interface ICoudWatchBindingOptions {
+export interface ICloudWatchBindingOptions {
     accessKeyId: string;
     secretKey: string;
     region: string;
@@ -16,4 +16,4 @@ export interface ICoudWatchBindingOptions {
     logGroup: string;
 }
 
-export type IBindingOption = ICoudWatchBindingOptions; // Extend more binding options here
+export type IBindingOption = ICloudWatchBindingOptions; // Extend more binding options here
