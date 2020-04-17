@@ -1,2 +1,2 @@
-# logit
+# ultralog
 Simple logging module for NodeJs
