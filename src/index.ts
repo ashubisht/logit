@@ -1,1 +1,3 @@
-console.log("This is index.ts");
+import { Logger } from "./lib/Core";
+
+export default Logger;

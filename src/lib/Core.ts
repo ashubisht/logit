@@ -1,9 +1,6 @@
-// From /packages/api/utils/logger.ts
 import { Format, TransformableInfo } from "logform";
 import * as winston from "winston";
-import { EnvConfig } from "./utils/envConfig";
-
-import * as WinstonCloudWatch from "winston-cloudwatch";
+import { EnvConfig } from "./utils/EnvConfig";
 
 export class Logger {
     public static getInstance(): Logger {
@@ -17,20 +14,7 @@ export class Logger {
 
     private readonly env = EnvConfig.getInstance();
 
-    private readonly cloudwatchConfig: WinstonCloudWatch.CloudwatchTransportOptions = {
-        awsAccessKeyId: this.env.AWS_ACCESS_KEY_ID,
-        awsSecretKey: this.env.AWS_SECRET_ACCESS_KEY,
-        awsRegion: this.env.AWS_REGION,
-        awsOptions: {
-            accessKeyId: this.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: this.env.AWS_SECRET_ACCESS_KEY,
-            region: this.env.AWS_REGION
-            // apiVersion: "2012-11-05"
-        },
-        level: "silly",
-        logStreamName: this.env.AWS_LOG_STREAM_NAME,
-        logGroupName: this.env.AWS_LOG_GROUP_NAME
-    };
+
 
     private readonly myFormat: Format = winston.format.printf(
         (infoMessage: TransformableInfo) => {
@@ -47,7 +31,7 @@ export class Logger {
         format: winston.format.combine(winston.format.timestamp(), this.myFormat),
         transports:
             this.env.NODE_ENV === "production"
-                ? [new WinstonCloudWatch(this.cloudwatchConfig)]
+                ? []
                 : [this.consoleTransportStream],
         exitOnError: false
     });
