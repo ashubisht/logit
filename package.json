@@ -1,5 +1,5 @@
 {
-  "name": "logit",
+  "name": "ultralog",
   "version": "0.1.0",
   "description": "Simple logging module for NodeJs",
   "main": "dist/index.js",
@@ -14,17 +14,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ashubisht/logit.git"
+    "url": "git+https://github.com/ashubisht/ultralog.git"
   },
   "keywords": [
-    "logit"
+    "ultralog"
   ],
   "author": "ashubisht",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ashubisht/logit/issues"
+    "url": "https://github.com/ashubisht/ultralog/issues"
   },
-  "homepage": "https://github.com/ashubisht/logit#readme",
+  "homepage": "https://github.com/ashubisht/ultralog#readme",
   "dependencies": {
     "@google-cloud/logging-winston": "^3.0.6",
     "aws-sdk": "^2.657.0",
