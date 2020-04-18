@@ -3,6 +3,7 @@ import * as winston from "winston";
 import { IBinding, IBindingOption } from "./bindings/IBindings";
 import * as TransportStream from "winston-transport";
 import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
+import { Verbose } from "./utils/Verbose";
 
 export class Logger {
     public static getInstance(): Logger {
@@ -14,13 +15,14 @@ export class Logger {
     }
     private static instance: Logger;
 
-    private readonly myFormat: Format = winston.format.printf(
+    private myFormat: Format = winston.format.printf(
         (infoMessage: TransformableInfo) => {
-            return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} \n`;
+            return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} ${this.verbose.print()} \n`;
         }
     );
 
-    private binding?: IBinding
+    private binding?: IBinding;
+    private verbose = Verbose.getInstance();
 
     private readonly consoleTransportStream = new winston.transports.Console({
         format: winston.format.combine(winston.format.colorize(), this.myFormat)
@@ -61,6 +63,14 @@ export class Logger {
         }
         this.logger.transports.splice(0, this.logger.transports.length);
         this.logger.add(this.fetchTransports());
+    }
+
+    public setVerbose(isVerbose: boolean) {
+        this.verbose.setVerbose(isVerbose);
+    }
+
+    public isVerbose() {
+        return this.verbose.isVerbose();
     }
 
     // Wrapper methods to add function name and file name in log messages
