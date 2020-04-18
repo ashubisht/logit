@@ -23,7 +23,8 @@ export class CloudWatchBindigs implements IBinding {
             },
             level: binding.level,
             logStreamName: binding.logStream,
-            logGroupName: binding.logGroup
+            logGroupName: binding.logGroup,
+            messageFormatter: binding.format
         }
         this.transportStream = new WinstonCloudWatch(cloudWatchConfig);
     }

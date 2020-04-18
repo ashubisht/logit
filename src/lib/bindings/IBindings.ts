@@ -1,4 +1,5 @@
 import * as TransportStream from "winston-transport";
+import { LogEntry } from "winston";
 
 export interface IBinding {
     config(obj: IBindingOption): void;
@@ -14,6 +15,7 @@ export interface ICloudWatchBindingOptions {
     level: "silly" | "info" | "error" | "debug";
     logStream: string;
     logGroup: string;
+    format?: (logObject: LogEntry) => string;
 }
 
 export type IBindingOption = ICloudWatchBindingOptions; // Extend more binding options here
