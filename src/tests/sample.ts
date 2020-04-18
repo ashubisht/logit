@@ -2,7 +2,7 @@ import { Logger } from "./../index";
 
 const logger = Logger.getInstance();
 logger.configure({
-    accessKeyId: "accessKeu",
+    accessKeyId: "accessKey",
     level: "silly",
     logGroup: "anchors-grp",
     logStream: "anchors-app-stream",
@@ -11,6 +11,11 @@ logger.configure({
 })
 
 logger.info("sample", "no-function/global ctx", "This is a sample message");
+
+// Print with verbose details
+logger.setVerbose(true);
+logger.info("sample", "no-function/global ctx", "This is a sample message with verbose details");
+
 console.log("Done");
 /* Program doesnt quits here.
 ** Suspect that an event or callback is opened.
