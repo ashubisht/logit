@@ -15,10 +15,7 @@ export class Logger {
     }
     private static instance: Logger;
 
-    private myFormat: Format = winston.format.printf(
-        (infoMessage: TransformableInfo) => {
-            return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} ${this.verbose.print()} \n`;
-        }
+    private readonly myFormat: Format = winston.format.printf((infoMessage: TransformableInfo) => this.buildFormat(infoMessage)
     );
 
     private binding?: IBinding;
@@ -27,6 +24,10 @@ export class Logger {
     private readonly consoleTransportStream = new winston.transports.Console({
         format: winston.format.combine(winston.format.colorize(), this.myFormat)
     });
+
+    private readonly buildFormat = (infoMessage: TransformableInfo) => {
+        return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} ${this.verbose.print()} \n`;
+    }
 
     private fetchTransports() {
         /* 
@@ -59,7 +60,11 @@ export class Logger {
             // Instanceof is not working here.
             // TODO: Check what type of config it is and then act accordingly to build bindings
             this.binding = new CloudWatchBindigs();
+            if (config.format === undefined) {
+                config.format = this.buildFormat;
+            }
             this.binding.config(config);
+
         }
         this.logger.transports.splice(0, this.logger.transports.length);
         this.logger.add(this.fetchTransports());
