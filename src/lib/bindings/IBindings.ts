@@ -4,7 +4,6 @@ import { LogEntry } from "winston";
 export interface IBinding {
     config(obj: IBindingOption): void;
     mapTransports(obj: unknown): void;
-    setVerbose(isVerbose: boolean): void;
     getStream(): TransportStream | undefined;
 }
 
@@ -15,6 +14,10 @@ export interface ICloudWatchBindingOptions {
     level: "silly" | "info" | "error" | "debug";
     logStream: string;
     logGroup: string;
+    format?: (logObject: LogEntry) => string;
+}
+
+export interface IConsoleBindingOptions {
     format?: (logObject: LogEntry) => string;
 }
 

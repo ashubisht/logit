@@ -1,9 +1,9 @@
 import { Format, TransformableInfo } from "logform";
 import * as winston from "winston";
-import { IBinding, IBindingOption } from "./bindings/IBindings";
+import { IBindingOption } from "./bindings/IBindings";
 import * as TransportStream from "winston-transport";
 import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
-import { Verbose } from "./utils/Verbose";
+import { Bindings } from "./bindings/Binding";
 
 export class Logger {
     public static getInstance(): Logger {
@@ -18,15 +18,14 @@ export class Logger {
     private readonly myFormat: Format = winston.format.printf((infoMessage: TransformableInfo) => this.buildFormat(infoMessage)
     );
 
-    private binding?: IBinding;
-    private verbose = Verbose.getInstance();
+    private binding?: Bindings;
 
     private readonly consoleTransportStream = new winston.transports.Console({
         format: winston.format.combine(winston.format.colorize(), this.myFormat)
     });
 
     private readonly buildFormat = (infoMessage: TransformableInfo) => {
-        return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} ${this.verbose.print()} \n`;
+        return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} ${this.binding?.verbose.print()} \n`;
     }
 
     private fetchTransports() {
@@ -59,7 +58,7 @@ export class Logger {
         if (config !== undefined) {
             // Instanceof is not working here.
             // TODO: Check what type of config it is and then act accordingly to build bindings
-            this.binding = new CloudWatchBindigs();
+            this.binding = CloudWatchBindigs.getInstance();
             if (config.format === undefined) {
                 config.format = this.buildFormat;
             }
@@ -70,12 +69,12 @@ export class Logger {
         this.logger.add(this.fetchTransports());
     }
 
-    public setVerbose(isVerbose: boolean) {
-        this.verbose.setVerbose(isVerbose);
+    public setVerbose(isEnabled: boolean) {
+        this.binding!.verbose.enabled = isEnabled;
     }
 
     public isVerbose() {
-        return this.verbose.isVerbose();
+        return this.binding?.verbose.enabled;
     }
 
     // Wrapper methods to add function name and file name in log messages

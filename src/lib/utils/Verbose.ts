@@ -1,29 +1,13 @@
 export class Verbose {
-    public static getInstance(): Verbose {
-        if (!Verbose.instance) {
-            Verbose.instance = new Verbose();
-        }
-        return Verbose.instance;
-    }
-    private static instance: Verbose;
-    private static verbose: boolean;
 
-    private constructor() { }
+    public enabled: boolean = false;
 
     public print() {
-        return Verbose.verbose ? this.harshPrint() : "";
+        return this.enabled ? this.harshPrint() : "";
     }
 
     public harshPrint() {
         return `GID: ${this.gid()}, UID: ${this.uid()}, PID: ${this.pid()}, MEMORY: { ${this.memory()} }`;
-    }
-
-    public setVerbose(flag: boolean) {
-        Verbose.verbose = flag;
-    }
-
-    public isVerbose() {
-        return Verbose.verbose;
     }
 
     private gid() {
