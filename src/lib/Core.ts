@@ -3,73 +3,118 @@ import { IBindingOption } from "./bindings/IBindings";
 import { Bindings } from "./bindings/Binding";
 import { ConsoleBinding } from "./bindings/impl/Console_Binding";
 import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
+import { ILogMapper, LogLevel } from "./ILogMapper";
 
 export class Logger {
+  private readonly binding: Bindings;
+  private readonly logger: winston.Logger;
+  private mapper: ILogMapper = {
+    info: ["info"],
+    debug: ["debug"],
+    error: ["error"],
+    trace: ["trace"],
+  };
 
-    private readonly binding: Bindings;
-    private readonly logger: winston.Logger;
-
-    public constructor(bindTo: "aws" | "gcp" | "console" | "papertrail") {
-        switch (bindTo) {
-            case "aws":
-                this.binding = CloudWatchBindigs.getInstance();
-                break;
-            case "console":
-                this.binding = ConsoleBinding.getInstance();
-                break;
-            // Add more bindings as needed
-            default:
-                this.binding = ConsoleBinding.getInstance();
-        }
-        this.logger = winston.createLogger({
-            level: "silly",
-            // Needs update here
-            format: winston.format.combine(winston.format.timestamp(), this.binding.buildFormat(this.binding.getFormatFunction())),
-            transports: [],
-            exitOnError: true
-        });
-    }
-
-    public configure(config: IBindingOption) {
-        // Updates the binding
-        this.binding.config(config);
-        this.logger.transports.splice(0, this.logger.transports.length);
-        this.logger.add(this.binding.getStream()!); // Check for removal of !
-    }
-
-    public setVerbose(isEnabled: boolean) {
-        this.binding.verbose.enabled = isEnabled;
-    }
-
-    public isVerbose() {
-        return this.binding.verbose.enabled;
-    }
-
-    // Wrapper methods to add function name and file name in log messages
-    public info(source: string, method: string, ...message: string[]) {
+  private logAtMapper(
+    option: LogLevel,
+    source: string,
+    method: string,
+    message: string[]
+  ) {
+    switch (option) {
+      case "info":
         this.logger.info(
-            `From ${source} and function ${method} : Message : ${message}`
+          `From ${source} and function ${method} : Message : ${message}`
         );
-    }
-
-    public error(source: string, method: string, ...message: string[]) {
-        this.logger.error(
-            `Error occurred in ${source} inside method ${method} with message: ${message}`
-        );
-    }
-
-    public debug(source: string, method: string, ...message: string[]) {
-        // Winston will write debug logs only when run in debug mode. Use trace for debugs
+        break;
+      case "debug":
         this.logger.debug(
-            `From ${source} and function ${method} : Message : ${message}`
+          `From ${source} and function ${method} : Message : ${message}`
         );
-    }
-
-    public trace(source: string, method: string, ...message: string[]) {
+        break;
+      case "error":
+        this.logger.error(
+          `Error occurred in ${source} inside method ${method} with message: ${message}`
+        );
+        break;
+      case "trace":
         this.logger.silly(
-            `From ${source} and function ${method} : Message : ${message}`
+          `From ${source} and function ${method} : Message : ${message}`
         );
+        break;
     }
+  }
+
+  public constructor(bindTo: "aws" | "gcp" | "console" | "papertrail") {
+    switch (bindTo) {
+      case "aws":
+        this.binding = CloudWatchBindigs.getInstance();
+        break;
+      case "console":
+        this.binding = ConsoleBinding.getInstance();
+        break;
+      // Add more bindings as needed
+      default:
+        this.binding = ConsoleBinding.getInstance();
+    }
+    this.logger = winston.createLogger({
+      level: "silly",
+      // Needs update here
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        this.binding.buildFormat(this.binding.getFormatFunction())
+      ),
+      transports: [],
+      exitOnError: true,
+    });
+  }
+
+  // Lib methods for bindings and configurations
+  public configure(config: IBindingOption) {
+    // Updates the binding
+    this.binding.config(config);
+    this.logger.transports.splice(0, this.logger.transports.length);
+    this.logger.add(this.binding.getStream()!); // Check for removal of !
+  }
+
+  public setVerbose(isEnabled: boolean) {
+    this.binding.verbose.enabled = isEnabled;
+  }
+
+  public isVerbose() {
+    return this.binding.verbose.enabled;
+  }
+
+  public mapLogLevels(mapper: ILogMapper) {
+    this.mapper = mapper;
+  }
+
+  // Wrapper methods to add function name and file name in log messages
+  // TODO: Message configuration may be added. Can use function builder
+
+  public info(source: string, method: string, ...message: string[]) {
+    this.mapper.info.forEach((level) =>
+      this.logAtMapper(level, source, method, message)
+    );
+  }
+
+  public error(source: string, method: string, ...message: string[]) {
+    this.mapper.error.forEach((level) =>
+      this.logAtMapper(level, source, method, message)
+    );
+  }
+
+  public debug(source: string, method: string, ...message: string[]) {
+    this.mapper.debug.forEach((level) =>
+      this.logAtMapper(level, source, method, message)
+    );
+  }
+
+  public trace(source: string, method: string, ...message: string[]) {
+    this.mapper.trace.forEach((level) =>
+      this.logAtMapper(level, source, method, message)
+    );
+  }
 }
 
 /*

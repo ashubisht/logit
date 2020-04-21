@@ -5,26 +5,28 @@ import { TransformableInfo } from "logform";
 import * as winston from "winston";
 
 export abstract class Bindings implements IBinding {
+  // Check of both property can be private as none can be instantiated but created internally
+  public abstract verbose: Verbose = new Verbose();
+  public abstract transportStream?: TransportStream;
 
-    // Check of both property can be private as none can be instantiated but created internally
-    public abstract verbose: Verbose = new Verbose();
-    public abstract transportStream?: TransportStream;
+  private readonly BUILD_FORMAT = (infoMessage: TransformableInfo) => {
+    return `${infoMessage.timestamp} ${infoMessage.level}: ${
+      infoMessage.message
+    } ${this.verbose.print()} \n`;
+  };
 
-    private readonly BUILD_FORMAT = (infoMessage: TransformableInfo) => {
-        return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} ${this.verbose.print()} \n`;
-    }
+  public abstract config(obj: IBindingOption): void;
+  public abstract getStream(): TransportStream | undefined;
 
-    public abstract config(obj: IBindingOption): void;
-    public abstract mapTransports(obj: unknown): void;
-    public abstract getStream(): TransportStream | undefined;
+  // Default format if nothing is provided in parameters during config
+  public readonly buildFormat = (
+    formatFunction: (infoMessage: TransformableInfo) => string
+  ) => {
+    return winston.format.printf(formatFunction);
+  };
 
-    // Default format if nothing is provided in parameters during config
-    public readonly buildFormat = (formatFunction: (infoMessage: TransformableInfo) => string) => {
-        return winston.format.printf(formatFunction);
-    }
-
-    public getFormatFunction() {
-        // Returns a function
-        return this.BUILD_FORMAT;
-    }
+  public getFormatFunction() {
+    // Returns a function
+    return this.BUILD_FORMAT;
+  }
 }
