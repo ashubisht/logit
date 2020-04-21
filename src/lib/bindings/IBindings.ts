@@ -21,4 +21,4 @@ export interface IConsoleBindingOptions {
     format?: (logObject: LogEntry) => string;
 }
 
-export type IBindingOption = ICloudWatchBindingOptions; // Extend more binding options here
+export type IBindingOption = ICloudWatchBindingOptions | IConsoleBindingOptions; // Extend more binding options here

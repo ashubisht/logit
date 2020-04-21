@@ -1,6 +1,12 @@
 import { Logger } from "./../index";
 
-const logger = Logger.getInstance();
+const consoleLogger = new Logger("console");
+consoleLogger.configure({});
+consoleLogger.info("sample", "no-function/global ctx", "This is a sample message");
+consoleLogger.setVerbose(true);
+consoleLogger.info("sample", "no-function/global ctx", "This is a sample message with verbose details");
+
+const logger = new Logger("aws");
 logger.configure({
     accessKeyId: "accessKey",
     level: "silly",

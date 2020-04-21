@@ -1,80 +1,48 @@
-import { Format, TransformableInfo } from "logform";
 import * as winston from "winston";
 import { IBindingOption } from "./bindings/IBindings";
-import * as TransportStream from "winston-transport";
-import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
 import { Bindings } from "./bindings/Binding";
+import { ConsoleBinding } from "./bindings/impl/Console_Binding";
+import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
 
 export class Logger {
-    public static getInstance(): Logger {
-        if (!Logger.instance) {
-            Logger.instance = new Logger();
+
+    private readonly binding: Bindings;
+    private readonly logger: winston.Logger;
+
+    public constructor(bindTo: "aws" | "gcp" | "console" | "papertrail") {
+        switch (bindTo) {
+            case "aws":
+                this.binding = CloudWatchBindigs.getInstance();
+                break;
+            case "console":
+                this.binding = ConsoleBinding.getInstance();
+                break;
+            // Add more bindings as needed
+            default:
+                this.binding = ConsoleBinding.getInstance();
         }
-
-        return Logger.instance;
-    }
-    private static instance: Logger;
-
-    private readonly myFormat: Format = winston.format.printf((infoMessage: TransformableInfo) => this.buildFormat(infoMessage)
-    );
-
-    private binding?: Bindings;
-
-    private readonly consoleTransportStream = new winston.transports.Console({
-        format: winston.format.combine(winston.format.colorize(), this.myFormat)
-    });
-
-    private readonly buildFormat = (infoMessage: TransformableInfo) => {
-        return `${infoMessage.timestamp} ${infoMessage.level}: ${infoMessage.message} ${this.binding?.verbose.print()} \n`;
-    }
-
-    private fetchTransports() {
-        /* 
-        ** Typescript cant infer types being returned from function because
-        ** each call is runtime and dynamic. Therefore, first fetch bindings
-        ** and then check for its initialisation than checking the method itself.
-        */
-
-        let bindingStream: TransportStream | undefined;
-        if (this.binding !== undefined) {
-            bindingStream = this.binding.getStream();
-        }
-
-        return (process.env.NODE_ENV === "production" && bindingStream !== undefined)
-            ? bindingStream
-            : this.consoleTransportStream;
+        this.logger = winston.createLogger({
+            level: "silly",
+            // Needs update here
+            format: winston.format.combine(winston.format.timestamp(), this.binding.buildFormat(this.binding.getFormatFunction())),
+            transports: [],
+            exitOnError: true
+        });
     }
 
-    private readonly logger = winston.createLogger({
-        level: "silly",
-        format: winston.format.combine(winston.format.timestamp(), this.myFormat),
-        transports: [],
-        exitOnError: true
-    });
-
-    private constructor() { }
-
-    public configure(config?: IBindingOption) {
-        if (config !== undefined) {
-            // Instanceof is not working here.
-            // TODO: Check what type of config it is and then act accordingly to build bindings
-            this.binding = CloudWatchBindigs.getInstance();
-            if (config.format === undefined) {
-                config.format = this.buildFormat;
-            }
-            this.binding.config(config);
-
-        }
+    public configure(config: IBindingOption) {
+        // Updates the binding
+        this.binding.config(config);
         this.logger.transports.splice(0, this.logger.transports.length);
-        this.logger.add(this.fetchTransports());
+        this.logger.add(this.binding.getStream()!); // Check for removal of !
     }
 
     public setVerbose(isEnabled: boolean) {
-        this.binding!.verbose.enabled = isEnabled;
+        this.binding.verbose.enabled = isEnabled;
     }
 
     public isVerbose() {
-        return this.binding?.verbose.enabled;
+        return this.binding.verbose.enabled;
     }
 
     // Wrapper methods to add function name and file name in log messages
@@ -104,6 +72,9 @@ export class Logger {
     }
 }
 
+/*
+Temp commented out to prevent additional dev overhead
+
 // Temporary disabled typing here as this is enforced by typescript spec
 export function log(
     _target: object,
@@ -125,3 +96,5 @@ export function log(
 }
 
 export const logger = Logger.getInstance();
+
+*/

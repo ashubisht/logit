@@ -6,6 +6,7 @@ import * as winston from "winston";
 
 export abstract class Bindings implements IBinding {
 
+    // Check of both property can be private as none can be instantiated but created internally
     public abstract verbose: Verbose = new Verbose();
     public abstract transportStream?: TransportStream;
 
