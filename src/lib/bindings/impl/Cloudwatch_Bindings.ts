@@ -30,7 +30,7 @@ export class CloudWatchBindigs extends Bindings {
         secretAccessKey: binding.secretKey,
         region: binding.region,
       },
-      level: binding.level,
+      level: binding.level === "trace" ? "silly" : binding.level,
       logStreamName: binding.logStream,
       logGroupName: binding.logGroup,
       messageFormatter:
