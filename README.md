@@ -1,32 +1,84 @@
 # ultralog
-Simple logging module for NodeJs. This is a wrapper module over the already established libraries to implement logger in simple 3-step code.
 
-Currently development in progress and it is in beta.
+Simple opinionated logging module for NodeJs.
 
-This space will be updated soon
+## Overview
 
-Quick update:
+Ultralog is opinionated logger framework for any application. This is a wrapper module over the already established libraries to implement logger in simple 3-step code. The idea is to use minimum configuration and achieve a formatted logging output in multi-cloud regions.
 
-This logger is applied by 3-step process
+## Usage
 
-1. import { Logger } from "./../index";
-   const logger = Logger.getInstance();
+This logger is applied by 3-step process.
 
-2. Supply config (currently AWS supported)
+1. Import the logger class.
+1. Supply the necessary configuration to logger class
+1. Use the logger methods available to push the logs to the server
 
+For further configuration, two additional methods are provided:
+
+1. mapLogLevels: This method allows you to duplicate the logs over other levels. This is useful in scenario where you may want all info logs or error logs to be printed to trace logs and debug logs.
+1. setVerbose: This method allows you to print process id, gid, uid, memory usage from process instance
+
+## Code Examples
+
+1. Import the Logger class:
+
+   ```typescript
+   // Typescript
+   import { Logger } from "ultralog";
+   const logger = new Logger("aws");
+   ```
+
+   ```JavaScript
+   // JavaScript
+   const { Logger } = require("ultralog");
+   const consoleLogger = new Logger("console");
+   ```
+
+1. Supply config (AWS Example):
+
+   ```typescript
    logger.configure({
     accessKeyId: "accessKey",
-    level: "silly",
+    level: "trace",
     logGroup: "log-group",
     logStream: "log-stream",
     region: "aws-region",
     secretKey: "secret"
    });
+   ```
 
-3. Set verbosity (optional, if needed). Verbosity prints additional message like process details and memory usage
+1. Set Verbosity (optional):
 
-4. Use functions available => logger.info/error/debug/trace
+   ```typescript
+   logger.setVerbose(true);
+   ```
 
-The function takes first parameter as fileName, second parameter as functionName, further parameters as string for message
+1. Map the logging levels (optional):
 
-Currently in beta. Bindings for GCP coming soon.
+   ```typescript
+   logger.mapLogLevels({
+      info: ["info", "debug", "trace"],
+      debug: ["debug"],
+      trace: ["trace"],
+      error: ["error", "debug", "trace"]
+   });
+   ```
+
+1. Use functions available => info/error/debug/trace
+
+   ```typescript
+   logger.info(
+      "file-name/service/class",
+      "function/method-name",
+      "stringified message"
+   );
+   ```
+
+The logger method takes first parameter as name of the file and class (if present), second parameter as function name, further parameters as message strings
+
+## Contribution and Issues
+
+Visit <https://github.com/ashubisht/ultralog> for more details \
+Raise issues at <https://github.com/ashubisht/ultralog/issues> \
+Read Contributions for code structure and development
