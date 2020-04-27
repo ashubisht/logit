@@ -26,6 +26,13 @@ logger.configure({
 
 logger.info("sample", "no-function/global ctx", "This is a sample message");
 
+logger.mapLogLevels({
+  info: ["info", "debug", "trace"],
+  debug: ["debug"],
+  trace: ["trace"],
+  error: ["error", "debug", "trace"]
+})
+
 // Print with verbose details
 logger.setVerbose(true);
 logger.info(
