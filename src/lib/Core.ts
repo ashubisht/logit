@@ -47,9 +47,7 @@ export class Logger {
     }
   }
 
-  public constructor(
-    bindTo: "aws" | "gcp" | "console" | "papertrail" | "file"
-  ) {
+  public constructor(bindTo: "aws" | "gcp" | "console" | "file") {
     switch (bindTo) {
       case "aws":
         this.binding = CloudWatchBindigs.getInstance();
