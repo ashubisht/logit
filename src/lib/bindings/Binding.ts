@@ -12,10 +12,10 @@ export abstract class Bindings implements IBinding {
   private readonly BUILD_FORMAT = (infoMessage: TransformableInfo) => {
     return `${infoMessage.timestamp} ${infoMessage.level}: ${
       infoMessage.message
-    } ${this.verbose.print()} \n`;
+      } ${this.verbose.print()} \n`;
   };
 
-  public abstract config(obj: IBindingOption): void;
+  public abstract config(binding: IBindingOption): void;
   public abstract getStream(): TransportStream | undefined;
 
   // Default format if nothing is provided in parameters during config
