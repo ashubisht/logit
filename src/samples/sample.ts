@@ -30,8 +30,8 @@ logger.mapLogLevels({
   info: ["info", "debug", "trace"],
   debug: ["debug"],
   trace: ["trace"],
-  error: ["error", "debug", "trace"]
-})
+  error: ["error", "debug", "trace"],
+});
 
 // Print with verbose details
 logger.setVerbose(true);
