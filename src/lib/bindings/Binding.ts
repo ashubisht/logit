@@ -15,7 +15,7 @@ export abstract class Bindings implements IBinding {
     } ${this.verbose.print()} \n`;
   };
 
-  public abstract config(obj: IBindingOption): void;
+  public abstract config(binding: IBindingOption): void;
   public abstract getStream(): TransportStream | undefined;
 
   // Default format if nothing is provided in parameters during config

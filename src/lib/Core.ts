@@ -4,6 +4,8 @@ import { Bindings } from "./bindings/Binding";
 import { ConsoleBinding } from "./bindings/impl/Console_Binding";
 import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
 import { ILogMapper, LogLevel } from "./ILogMapper";
+import { StackDriverBindings } from "./bindings/impl/Stackdriver_Bindings";
+import { FileBindings } from "./bindings/impl/File_Bindings";
 
 export class Logger {
   private readonly binding: Bindings;
@@ -45,7 +47,7 @@ export class Logger {
     }
   }
 
-  public constructor(bindTo: "aws" | "gcp" | "console" | "papertrail") {
+  public constructor(bindTo: "aws" | "gcp" | "console" | "file") {
     switch (bindTo) {
       case "aws":
         this.binding = CloudWatchBindigs.getInstance();
@@ -53,7 +55,11 @@ export class Logger {
       case "console":
         this.binding = ConsoleBinding.getInstance();
         break;
-      // Add more bindings as needed
+      case "gcp":
+        this.binding = StackDriverBindings.getInstance();
+        break;
+      case "file":
+        this.binding = FileBindings.getInstance();
       default:
         this.binding = ConsoleBinding.getInstance();
     }

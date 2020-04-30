@@ -81,4 +81,4 @@ The logger method takes first parameter as name of the file and class (if presen
 
 Visit <https://github.com/ashubisht/ultralog> for more details \
 Raise issues at <https://github.com/ashubisht/ultralog/issues> \
-Read Contributions for code structure and development
+Read Contributions (updated soon) for code structure and development
