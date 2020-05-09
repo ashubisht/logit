@@ -1,6 +1,6 @@
-import { Logger } from "./../index";
+import { ConsoleLogger, CloudWatchLogger } from "../";
 
-const consoleLogger = new Logger("console");
+const consoleLogger = new ConsoleLogger();
 consoleLogger.configure({});
 consoleLogger.info(
   "sample",
@@ -14,7 +14,7 @@ consoleLogger.info(
   "This is a sample message with verbose details"
 );
 
-const logger = new Logger("aws");
+const logger = new CloudWatchLogger();
 logger.configure({
   accessKeyId: "accessKey",
   level: "trace",

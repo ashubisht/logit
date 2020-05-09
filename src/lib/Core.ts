@@ -1,15 +1,12 @@
 import * as winston from "winston";
 import { IBindingOption } from "./bindings/IBindings";
 import { Bindings } from "./bindings/Binding";
-import { ConsoleBinding } from "./bindings/impl/Console_Binding";
-import { CloudWatchBindigs } from "./bindings/impl/Cloudwatch_Bindings";
 import { ILogMapper, LogLevel } from "./ILogMapper";
-import { StackDriverBindings } from "./bindings/impl/Stackdriver_Bindings";
-import { FileBindings } from "./bindings/impl/File_Bindings";
 
-export class Logger {
-  private readonly binding: Bindings;
-  private readonly logger: winston.Logger;
+export abstract class Logger {
+  protected abstract readonly binding: Bindings;
+  protected abstract readonly logger: winston.Logger;
+
   private mapper: ILogMapper = {
     info: ["info"],
     debug: ["debug"],
@@ -45,34 +42,6 @@ export class Logger {
         );
         break;
     }
-  }
-
-  public constructor(bindTo: "aws" | "gcp" | "console" | "file") {
-    switch (bindTo) {
-      case "aws":
-        this.binding = CloudWatchBindigs.getInstance();
-        break;
-      case "console":
-        this.binding = ConsoleBinding.getInstance();
-        break;
-      case "gcp":
-        this.binding = StackDriverBindings.getInstance();
-        break;
-      case "file":
-        this.binding = FileBindings.getInstance();
-      default:
-        this.binding = ConsoleBinding.getInstance();
-    }
-    this.logger = winston.createLogger({
-      level: "silly",
-      // Needs update here
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        this.binding.buildFormat(this.binding.getFormatFunction())
-      ),
-      transports: [],
-      exitOnError: true,
-    });
   }
 
   // Lib methods for bindings and configurations
