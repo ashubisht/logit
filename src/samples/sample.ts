@@ -1,4 +1,5 @@
-import { ConsoleLogger, CloudWatchLogger } from "../";
+import { ConsoleLogger } from "../lib/coreImpl/ConsoleLogger";
+import { CloudWatchLogger } from "../lib/coreImpl/CloudWatchLogger";
 
 const consoleLogger = new ConsoleLogger();
 consoleLogger.configure({});
